@@ -1,4 +1,4 @@
-# ExpenseWise - Receipt Parser
+# ExpenseWise - Receipt Analytics
 
 ExpenseWise is a modern web application that allows users to upload receipt images, analyze them using Google Gemini AI, and visualize their spending trends and categories. The app features a beautiful, responsive UI, batch image upload, and interactive charts for financial insights.
 
