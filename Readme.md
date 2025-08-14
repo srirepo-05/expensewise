@@ -82,10 +82,10 @@ cd receipt-parser
 
 ## Technologies Used
 
-- **Frontend:** HTML, Tailwind CSS, Vanilla JavaScript (no frameworks)
+- **Frontend:** HTML, Tailwind CSS, Javascript
 - **Backend:** Node.js, Express.js
 - **AI Integration:** Google Gemini API (`@google/generative-ai`)
-- **Data Visualization:** Custom SVG charts (no external chart libraries)
+- **Data Visualization:** Custom SVG charts
 
 ---
 
