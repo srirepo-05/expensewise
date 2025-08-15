@@ -17,8 +17,9 @@
 <body>
     <div class="relative flex size-full min-h-screen flex-col bg-[#11221f] dark group/design-root overflow-x-hidden" style='font-family: Inter, "Noto Sans", sans-serif;'>
       <div class="layout-container flex h-full grow flex-col">
-        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#244742] px-10 py-3">
-          <div class="flex items-center gap-4 text-white">
+        <!-- Mobile-responsive header -->
+        <header class="flex items-center justify-between whitespace-nowrap border-b border-solid border-b-[#244742] px-4 sm:px-6 lg:px-10 py-3">
+          <div class="flex items-center gap-2 sm:gap-4 text-white">
             <div class="size-4">
               <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path
@@ -29,47 +30,76 @@
                 ></path>
               </svg>
             </div>
-            <h2 class="text-white text-lg font-bold leading-tight tracking-[-0.015em]">ExpenseWise</h2>
+            <h2 class="text-white text-sm sm:text-lg font-bold leading-tight tracking-[-0.015em]">ExpenseWise</h2>
           </div>
-          <div class="flex flex-1 justify-end gap-8">
-            <div class="flex items-center gap-9">
+          <div class="flex flex-1 justify-end gap-2 sm:gap-8">
+            <!-- Hidden navigation on mobile, visible on larger screens -->
+            <div class="hidden lg:flex items-center gap-9">
               <a class="text-white text-sm font-medium leading-normal" href="#">Dashboard</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Receipts</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Reports</a>
               <a class="text-white text-sm font-medium leading-normal" href="#">Settings</a>
             </div>
+            <!-- Help button - smaller on mobile -->
             <button
-              class="flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 bg-[#244742] text-white gap-2 text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2.5"
+              class="hidden sm:flex max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-8 sm:h-10 bg-[#244742] text-white gap-2 text-xs sm:text-sm font-bold leading-normal tracking-[0.015em] min-w-0 px-2 sm:px-2.5"
             >
-              <div class="text-white" data-icon="Question" data-size="20px" data-weight="regular">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20px" height="20px" fill="currentColor" viewBox="0 0 256 256">
+              <div class="text-white" data-icon="Question" data-size="16px" data-weight="regular">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16px" height="16px" fill="currentColor" viewBox="0 0 256 256">
                   <path
                     d="M140,180a12,12,0,1,1-12-12A12,12,0,0,1,140,180ZM128,72c-22.06,0-40,16.15-40,36v4a8,8,0,0,0,16,0v-4c0-11,10.77-20,24-20s24,9,24,20-10.77,20-24,20a8,8,0,0,0-8,8v8a8,8,0,0,0,16,0v-.72c18.24-3.35,32-17.9,32-35.28C168,88.15,150.06,72,128,72Zm104,56A104,104,0,1,1,128,24,104.11,104.11,0,0,1,232,128Zm-16,0a88,88,0,1,0-88,88A88.1,88.1,0,0,0,216,128Z"
                   ></path>
                 </svg>
               </div>
             </button>
-            <div
-              class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-10"
-              style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNg66O16ZrNSGwKq1r1CTWZCW8f8Ew0lgIXa4Cu8GpDzSpygkl3KxilQvGCBqoF7OUJ5dQzxbJxvcLWOOhTexhHeJv8fRZs81n6yoAk2_9kXwGDI2uANGsMIjZgF7JXqUaP2hgb6ZsOmOsDZYhnwsG7NQkxOpiDAY_PjKr8R7kprb8a7ew9JlNlw0XAdqLE16thi0ai8jJyIy9K81fIVPqUWL5_QFPkcM3XlxKbSXLmHbD_FZWxNUcihvq-Qhqa5q4ppByWDUX");'
-            ></div>
+            <!-- Profile dropdown -->
+            <div class="relative">
+              <div
+                id="profileIcon"
+                class="bg-center bg-no-repeat aspect-square bg-cover rounded-full size-8 sm:size-10 cursor-pointer hover:ring-2 hover:ring-[#19e6c7] transition-all"
+                style='background-image: url("https://lh3.googleusercontent.com/aida-public/AB6AXuCNg66O16ZrNSGwKq1r1CTWZCW8f8Ew0lgIXa4Cu8GpDzSpygkl3KxilQvGCBqoF7OUJ5dQzxbJxvcLWOOhTexhHeJv8fRZs81n6yoAk2_9kXwGDI2uANGsMIjZgF7JXqUaP2hgb6ZsOmOsDZYhnwsG7NQkxOpiDAY_PjKr8R7kprb8a7ew9JlNlw0XAdqLE16thi0ai8jJyIy9K81fIVPqUWL5_QFPkcM3XlxKbSXLmHbD_FZWxNUcihvq-Qhqa5q4ppByWDUX");'
+              ></div>
+              
+              <!-- Mobile-responsive dropdown -->
+              <div id="profileDropdown" class="hidden absolute right-0 mt-2 w-44 sm:w-48 bg-[#244742] border border-[#34655e] rounded-lg shadow-lg z-50">
+                <div class="py-2">
+                  <div class="px-3 sm:px-4 py-2 border-b border-[#34655e]">
+                    <p id="dropdownUsername" class="text-white font-medium text-xs sm:text-sm truncate"></p>
+                    <p id="dropdownEmail" class="text-[#93c8c0] text-xs truncate"></p>
+                  </div>
+                  <button
+                    id="logoutButton"
+                    class="w-full text-left px-3 sm:px-4 py-2 text-[#fa5838] hover:bg-[#34655e] transition-colors flex items-center gap-2"
+                  >
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 256 256">
+                      <path d="M112,216a8,8,0,0,1-8,8H48a16,16,0,0,1-16-16V48A16,16,0,0,1,48,32h56a8,8,0,0,1,0,16H48V208h56A8,8,0,0,1,112,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L196.69,120H104a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,221.66,122.34Z"/>
+                    </svg>
+                    <span class="text-xs sm:text-sm">Logout</span>
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         </header>
-        <div class="px-40 flex flex-1 justify-center py-5">
+        
+        <!-- Mobile-responsive main content -->
+        <div class="px-4 sm:px-8 lg:px-40 flex flex-1 justify-center py-5">
           <div class="layout-content-container flex flex-col max-w-[960px] flex-1">
-            <div class="flex flex-wrap justify-between gap-3 p-4">
-              <p class="text-white tracking-light text-[32px] font-bold leading-tight min-w-72">Upload Receipts</p>
+            <div class="flex flex-wrap justify-between gap-3 p-2 sm:p-4">
+              <p class="text-white tracking-light text-xl sm:text-2xl lg:text-[32px] font-bold leading-tight min-w-0">Upload Receipts</p>
             </div>
-            <div class="flex flex-col p-4">
-              <div class="flex flex-col items-center gap-6 rounded-lg border-2 border-dashed border-[#34655e] px-6 py-14" id="dropZone">
+            
+            <!-- Mobile-responsive upload section -->
+            <div class="flex flex-col p-2 sm:p-4">
+              <div class="flex flex-col items-center gap-4 sm:gap-6 rounded-lg border-2 border-dashed border-[#34655e] px-4 sm:px-6 py-8 sm:py-14" id="dropZone">
                 <div class="flex max-w-[480px] flex-col items-center gap-2">
-                  <p class="text-white text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Drag and drop or browse to upload receipts</p>
-                  <p class="text-white text-sm font-normal leading-normal max-w-[480px] text-center">Supported formats: JPG, PNG, PDF</p>
+                  <p class="text-white text-base sm:text-lg font-bold leading-tight tracking-[-0.015em] max-w-[480px] text-center">Drag and drop or browse to upload receipts</p>
+                  <p class="text-white text-xs sm:text-sm font-normal leading-normal max-w-[480px] text-center">Supported formats: JPG, PNG, PDF</p>
                 </div>
                 <input type="file" id="receiptUploader" accept="image/*" multiple class="hidden">
                 <button
                   id="browseButton"
-                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 px-4 bg-[#244742] text-white text-sm font-bold leading-normal tracking-[0.015em]"
+                  class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-10 sm:h-10 px-4 bg-[#244742] text-white text-sm font-bold leading-normal tracking-[0.015em]"
                 >
                   <span class="truncate">Browse Files</span>
                 </button>
@@ -77,54 +107,59 @@
               
               <!-- Selected Files Display -->
               <div id="selectedFiles" class="mt-4 hidden">
-                <p class="text-white text-lg font-medium mb-2">Selected Files:</p>
+                <p class="text-white text-base sm:text-lg font-medium mb-2">Selected Files:</p>
                 <div id="filesList" class="space-y-2"></div>
               </div>
             </div>
             
-            <div class="flex px-4 py-3 justify-center">
+            <!-- Mobile-responsive process button -->
+            <div class="flex px-2 sm:px-4 py-3 justify-center">
               <button
                 id="processButton"
-                class="flex min-w-[84px] max-w-[480px] cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-[#19e6c7] text-[#11221f] text-base font-bold leading-normal tracking-[0.015em] disabled:bg-gray-500 disabled:cursor-not-allowed"
+                class="flex min-w-[84px] max-w-[480px] w-full sm:w-auto cursor-pointer items-center justify-center overflow-hidden rounded-lg h-12 px-5 bg-[#19e6c7] text-[#11221f] text-base font-bold leading-normal tracking-[0.015em] disabled:bg-gray-500 disabled:cursor-not-allowed"
               >
                 <span class="truncate">Analyze Receipts</span>
               </button>
             </div>
 
             <!-- Status and Results -->
-            <div id="status" class="px-4 py-2 text-center text-white"></div>
+            <div id="status" class="px-2 sm:px-4 py-2 text-center text-white text-sm sm:text-base"></div>
             
-            <!-- Results Section -->
-            <div id="resultsSection" class="hidden px-4 py-6">
+            <!-- Mobile-responsive results section -->
+            <div id="resultsSection" class="hidden px-2 sm:px-4 py-6">
                 <div class="flex items-center justify-between pb-3">
-                    <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em]">Analysis Results</h2>
+                    <h2 class="text-white text-lg sm:text-[22px] font-bold leading-tight tracking-[-0.015em]">Analysis Results</h2>
                     <label class="flex items-center cursor-pointer gap-2">
-                        <span class="text-[#93c8c0] text-sm">Show</span>
-                        <input id="toggleResults" type="checkbox" class="toggle-checkbox h-5 w-10 rounded-full bg-[#244742] border-2 border-[#19e6c7] focus:ring-0 transition-all" checked>
+                        <span class="text-[#93c8c0] text-xs sm:text-sm">Show</span>
+                        <input id="toggleResults" type="checkbox" class="toggle-checkbox h-4 w-8 sm:h-5 sm:w-10 rounded-full bg-[#244742] border-2 border-[#19e6c7] focus:ring-0 transition-all" checked>
                     </label>
                 </div>
-                <div id="results" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4"></div>
+                <div id="results" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4"></div>
             </div>
 
-            <h2 class="text-white text-[22px] font-bold leading-tight tracking-[-0.015em] px-4 pb-3 pt-5">Spending Overview</h2>
-            <div class="flex flex-wrap gap-4 px-4 py-6">
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#34655e] p-6">
-                <p class="text-white text-base font-medium leading-normal">Monthly Spending Trend</p>
-                <p id="monthlyTotal" class="text-white tracking-light text-[32px] font-bold leading-tight truncate">$0</p>
+            <!-- Mobile-responsive spending overview -->
+            <h2 class="text-white text-lg sm:text-[22px] font-bold leading-tight tracking-[-0.015em] px-2 sm:px-4 pb-3 pt-5">Spending Overview</h2>
+            <div class="flex flex-col lg:flex-row gap-4 px-2 sm:px-4 py-6">
+              <!-- Monthly chart - full width on mobile -->
+              <div class="flex min-w-0 flex-1 flex-col gap-2 rounded-lg border border-[#34655e] p-4 sm:p-6">
+                <p class="text-white text-sm sm:text-base font-medium leading-normal">Monthly Spending Trend</p>
+                <p id="monthlyTotal" class="text-white tracking-light text-2xl sm:text-[32px] font-bold leading-tight truncate">$0</p>
                 <div class="flex gap-1">
-                  <p class="text-[#93c8c0] text-base font-normal leading-normal">Total Analyzed</p>
+                  <p class="text-[#93c8c0] text-sm sm:text-base font-normal leading-normal">Total Analyzed</p>
                 </div>
-                <div class="flex min-h-[180px] flex-1 flex-col gap-8 py-4" id="monthlyChart">
+                <div class="flex min-h-[150px] sm:min-h-[180px] flex-1 flex-col gap-8 py-4" id="monthlyChart">
                   <!-- Chart will be dynamically generated here -->
                 </div>
               </div>
-              <div class="flex min-w-72 flex-1 flex-col gap-2 rounded-lg border border-[#34655e] p-6">
-                <p class="text-white text-base font-medium leading-normal">Spending by Category</p>
-                <p id="categoryTotal" class="text-white tracking-light text-[32px] font-bold leading-tight truncate">$0</p>
+              
+              <!-- Category chart - full width on mobile -->
+              <div class="flex min-w-0 flex-1 flex-col gap-2 rounded-lg border border-[#34655e] p-4 sm:p-6">
+                <p class="text-white text-sm sm:text-base font-medium leading-normal">Spending by Category</p>
+                <p id="categoryTotal" class="text-white tracking-light text-2xl sm:text-[32px] font-bold leading-tight truncate">$0</p>
                 <div class="flex gap-1">
-                  <p class="text-[#93c8c0] text-base font-normal leading-normal">Total Analyzed</p>
+                  <p class="text-[#93c8c0] text-sm sm:text-base font-normal leading-normal">Total Analyzed</p>
                 </div>
-                <div id="categoryChart" class="flex min-h-[180px] flex-1 flex-col gap-8 py-4">
+                <div id="categoryChart" class="flex min-h-[150px] sm:min-h-[180px] flex-1 flex-col gap-8 py-4">
                   <!-- Chart will be dynamically generated here -->
                 </div>
               </div>
@@ -134,6 +169,7 @@
       </div>
     </div>
 
+    <script src="auth.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

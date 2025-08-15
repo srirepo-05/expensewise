@@ -1,4 +1,78 @@
 document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication first
+    if (!authManager.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    // Display user info in header
+    // Replace the existing user info section with this:
+    // Display user info in header
+    const user = authManager.getCurrentUser();
+    if (user) {
+        // Update header with user info
+        const userAvatar = document.querySelector('#profileIcon');
+        if (userAvatar) {
+            userAvatar.innerHTML = `
+                <div class="w-full h-full bg-[#19e6c7] rounded-full flex items-center justify-center text-[#11221f] font-bold text-sm">
+                    ${user.username.charAt(0).toUpperCase()}
+                </div>
+            `;
+            userAvatar.style.backgroundImage = 'none';
+            userAvatar.title = user.username;
+        }
+
+        // Update dropdown info
+        const dropdownUsername = document.getElementById('dropdownUsername');
+        const dropdownEmail = document.getElementById('dropdownEmail');
+        if (dropdownUsername) dropdownUsername.textContent = user.username;
+        if (dropdownEmail) dropdownEmail.textContent = user.email;
+
+        // Profile dropdown functionality
+        const profileIcon = document.getElementById('profileIcon');
+        const profileDropdown = document.getElementById('profileDropdown');
+        const logoutButton = document.getElementById('logoutButton');
+
+        // Toggle dropdown on profile click
+        profileIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            profileDropdown.classList.toggle('hidden');
+        });
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+            if (!profileIcon.contains(e.target) && !profileDropdown.contains(e.target)) {
+                profileDropdown.classList.add('hidden');
+            }
+        });
+
+        // Logout functionality
+        logoutButton.addEventListener('click', () => {
+            authManager.logout();
+        });
+    }
+
+    // ADD THIS HELPER FUNCTION HERE (after user info update):
+    async function makeAuthenticatedRequest(url, options = {}) {
+        const headers = {
+            ...authManager.getAuthHeaders(),
+            ...options.headers
+        };
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        // Check if token is expired
+        if (response.status === 401 || response.status === 403) {
+            authManager.logout();
+            return null;
+        }
+
+        return response;
+    }
+
     const uploader = document.getElementById('receiptUploader');
     const browseButton = document.getElementById('browseButton');
     const processButton = document.getElementById('processButton');
@@ -221,7 +295,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update category spending chart
-   function updateCategoryChart() {
+   // Update category chart function for mobile responsiveness
+    // Replace the entire updateCategoryChart function with this complete version:
+function updateCategoryChart() {
     const categoryChartContainer = document.getElementById('categoryChart');
     const categoryTotal = document.getElementById('categoryTotal');
     
@@ -232,9 +308,9 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (categories.length === 0) {
         categoryChartContainer.innerHTML = `
-            <div class="flex items-center justify-center min-h-[180px]">
+            <div class="flex items-center justify-center min-h-[150px] sm:min-h-[180px]">
                 <div class="text-center">
-                    <div class="w-32 h-32 rounded-full border-4 border-[#244742] mx-auto mb-4"></div>
+                    <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-full border-4 border-[#244742] mx-auto mb-4"></div>
                     <p class="text-[#93c8c0] text-sm">No data available</p>
                 </div>
             </div>
@@ -279,10 +355,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return data;
     });
 
-    // Generate SVG pie chart
-    const radius = 80;
-    const centerX = 100;
-    const centerY = 100;
+    // Generate SVG pie chart with mobile responsiveness
+    const radius = window.innerWidth < 640 ? 60 : 80;
+    const centerX = window.innerWidth < 640 ? 80 : 100;
+    const centerY = window.innerWidth < 640 ? 80 : 100;
     
     let pathElements = '';
     
@@ -329,20 +405,22 @@ document.addEventListener('DOMContentLoaded', () => {
         </div>
     `).join('');
 
+    const svgWidth = window.innerWidth < 640 ? '160' : '200';
+    const svgHeight = window.innerWidth < 640 ? '160' : '200';
+
     categoryChartContainer.innerHTML = `
-        <div class="flex items-center justify-between min-h-[180px] gap-4">
+        <div class="flex flex-col sm:flex-row items-center justify-between min-h-[150px] sm:min-h-[180px] gap-4">
             <div class="flex-shrink-0">
-                <svg width="200" height="200" viewBox="0 0 200 200" class="drop-shadow-lg">
+                <svg width="${svgWidth}" height="${svgHeight}" viewBox="0 0 ${svgWidth} ${svgHeight}" class="drop-shadow-lg">
                     ${pathElements}
                 </svg>
             </div>
-            <div class="flex-1 max-h-[180px] overflow-y-auto pr-2">
+            <div class="flex-1 max-h-[150px] sm:max-h-[180px] overflow-y-auto pr-2 w-full sm:w-auto">
                 ${legendItems}
             </div>
         </div>
     `;
 }
-
 
     // Process receipts
     processButton.addEventListener('click', async () => {
@@ -373,14 +451,20 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusDiv.textContent = `🧠 Processing receipt ${i + 1} of ${selectedFiles.length}: ${file.name}`;
                 const base64Image = await toBase64(file);
 
-                const response = await fetch('/api/process-receipt', {
+                // CHANGE THIS: Use authenticated request instead of regular fetch
+                const response = await makeAuthenticatedRequest('/api/process-receipt', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         image: base64Image,
                         mimeType: file.type
                     }),
                 });
+
+                // ADD THIS: Check if user was logged out
+                if (!response) {
+                    // User was logged out due to expired token
+                    return;
+                }
 
                 const result = await response.json();
                 let resultObj;
@@ -432,7 +516,6 @@ document.addEventListener('DOMContentLoaded', () => {
             processButton.innerHTML = '<span class="truncate">Analyze Receipts</span>';
         }
     });
-
     // Display results function
     function displayResults(results) {
         resultsDiv.innerHTML = '';
@@ -505,4 +588,6 @@ document.addEventListener('DOMContentLoaded', () => {
         reader.onload = () => resolve(reader.result.split(',')[1]);
         reader.onerror = error => reject(error);
     });
+
+
 });

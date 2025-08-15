@@ -1,4 +1,55 @@
-processButton.addEventListener ('click', async () => {
+// Add authentication check at the top
+document.addEventListener('DOMContentLoaded', () => {
+    // Check authentication first
+    if (!authManager.isAuthenticated()) {
+        window.location.href = '/login.html';
+        return;
+    }
+
+    // Display user info in header
+    const user = authManager.getCurrentUser();
+    if (user) {
+        // Update header with user info
+        const userAvatar = document.querySelector('.bg-center.bg-no-repeat.aspect-square.bg-cover.rounded-full.size-10');
+        if (userAvatar) {
+            userAvatar.innerHTML = `
+                <div class="w-full h-full bg-[#19e6c7] rounded-full flex items-center justify-center text-[#11221f] font-bold text-sm">
+                    ${user.username.charAt(0).toUpperCase()}
+                </div>
+            `;
+            userAvatar.style.backgroundImage = 'none';
+            userAvatar.title = user.username;
+            userAvatar.addEventListener('click', () => {
+                authManager.logout();
+            });
+        }
+    }
+
+    // ...existing code...
+
+    // Update the fetch request to include auth headers
+    async function makeAuthenticatedRequest(url, options = {}) {
+        const headers = {
+            ...authManager.getAuthHeaders(),
+            ...options.headers
+        };
+
+        const response = await fetch(url, {
+            ...options,
+            headers
+        });
+
+        // Check if token is expired
+        if (response.status === 401 || response.status === 403) {
+            authManager.logout();
+            return null;
+        }
+
+        return response;
+    }
+
+    // Update the process receipts function
+    processButton.addEventListener('click', async () => {
         if (selectedFiles.length === 0) {
             statusDiv.textContent = '⚠️ Please select at least one receipt image!';
             return;
@@ -26,14 +77,19 @@ processButton.addEventListener ('click', async () => {
                 statusDiv.textContent = `🧠 Processing receipt ${i + 1} of ${selectedFiles.length}: ${file.name}`;
                 const base64Image = await toBase64(file);
 
-                const response = await fetch('/api/process-receipt', {
+                // Use authenticated request
+                const response = await makeAuthenticatedRequest('/api/process-receipt', {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         image: base64Image,
                         mimeType: file.type
                     }),
                 });
+
+                if (!response) {
+                    // User was logged out due to expired token
+                    return;
+                }
 
                 const result = await response.json();
                 let resultObj;
@@ -85,3 +141,6 @@ processButton.addEventListener ('click', async () => {
             processButton.innerHTML = '<span class="truncate">Analyze Receipts</span>';
         }
     });
+
+    // ...rest of existing code...
+});
