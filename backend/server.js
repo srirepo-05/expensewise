@@ -4,13 +4,19 @@ const { GoogleGenerativeAI } = require('@google/generative-ai');
 const dotenv = require('dotenv');
 const cors = require('cors');
 const path = require('path');
+const connectDB = require('./config/database');
+const authRoutes = require('./routes/auth');
+const authenticateToken = require('./middleware/auth');
 
 // Configure environment variables
 dotenv.config();
 
+// Connect to database
+connectDB();
+
 // Initialize the app
 const app = express();
-const port = 3000; // You can use any port
+const port = process.env.PORT || 3000;
 
 // Middleware setup
 app.use(cors()); // Enable Cross-Origin Resource Sharing
@@ -22,8 +28,11 @@ app.use(express.static(path.join(__dirname, '../frontend')));
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash-latest" });
 
-// Define the main API endpoint
-app.post('/api/process-receipt', async (req, res) => {
+// Auth routes
+app.use('/api/auth', authRoutes);
+
+// Protected receipt processing endpoint
+app.post('/api/process-receipt', authenticateToken, async (req, res) => {
     try {
         // Get the image data and MIME type from the request body
         const { image, mimeType } = req.body;
@@ -78,6 +87,6 @@ Rules:
 });
 
 // Start the server
-app.listen(port, () => {
+app.listen(port,'0.0.0.0', () => {
     console.log(`✨ Server running on http://localhost:${port}`);
 });
